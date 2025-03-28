@@ -1,0 +1,12 @@
+<div class="form-check">
+  <input 
+    class="form-check-input" 
+    type="checkbox" 
+    id="flexCheckDefault"
+    [ngModel]="value"
+    (ngModelChange)="checkboxChange($event)"
+  >
+  <label class="form-check-label" for="flexCheckDefault">
+    {{ text }}
+  </label>
+</div>

@@ -3,16 +3,34 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { NgbDateAdapter, NgbDateNativeAdapter, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { provideHttpClient } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CheckboxComponent } from './components/checkbox/checkbox.component';
+import { TodoCardComponent } from './components/todo-card/todo-card.component';
+import { ExpiredDatePipe } from './pipes/expired-date.pipe';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CheckboxComponent,
+    TodoCardComponent,
+    ExpiredDatePipe
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgbModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    provideHttpClient(), 
+    {provide: NgbDateAdapter, useClass: NgbDateNativeAdapter},
+    DatePipe,
+    ExpiredDatePipe
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

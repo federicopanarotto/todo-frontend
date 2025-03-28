@@ -1,0 +1,28 @@
+<div class="alert" [ngClass]="{
+      'alert-secondary': !todo.completed,
+      'alert-success': todo.completed, 
+      'alert-danger': !todo.completed && todo.expired
+    }">
+  <div>
+    <div>
+      <span [ngClass]="{'text-decoration-line-through': todo.completed}">
+        {{ todo.title }}
+      </span>
+      <span *ngIf="todo.completed" class="text-success"> completato</span>
+    </div>
+    <hr>
+    <div>
+      <p>
+        <i class="bi bi-calendar-week"></i> {{ todo.dueDate | expiredDate }}
+        <span *ngIf="todo.expired" class="text-danger">scaduto</span>
+      </p>
+    </div>
+    <div>
+      <app-checkbox
+        [text]="'completato'"
+        [value]="completed"
+        (checkboxChange)="completeChange($event)"
+      ></app-checkbox>
+    </div>
+  </div>
+</div>

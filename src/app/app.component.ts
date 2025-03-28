@@ -75,7 +75,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.todoSrv.add(title, dueDate)
         .subscribe(() => {
           this.refreshSubject.next('');
-
+          this.todoForm.reset();
+          this.todoForm.markAsPristine();
           modal.close('Save click');
         });
 
@@ -84,6 +85,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   dismissModal(modal: any) {
     this.todoForm.reset();
+    this.todoForm.markAsPristine();
 
     modal.dismiss('Cross click')
   }

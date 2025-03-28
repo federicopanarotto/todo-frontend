@@ -50,7 +50,7 @@
 						name="title"
             type="text"
             formControlName="title"
-            [class.is-invalid]="todoForm.get('title')?.invalid"
+            [class.is-invalid]="todoForm.get('title')?.dirty && todoForm.get('title')?.invalid"
 					/>
 				</div>
 			</div>

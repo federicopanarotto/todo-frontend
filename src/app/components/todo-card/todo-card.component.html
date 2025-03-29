@@ -1,12 +1,14 @@
-<div class="alert" [ngClass]="{
+<div class="alert shadow-sm border-0" [ngClass]="{
       'alert-secondary': !todo.completed,
       'alert-success': todo.completed, 
       'alert-danger': !todo.completed && todo.expired
     }">
   <div>
-    <div>
-      <span [ngClass]="{'text-decoration-line-through': todo.completed}">
-        {{ todo.title }}
+    <div class="d-flex justify-content-between align-items-center">
+      <span 
+        class="fs-5"
+        [ngClass]="{'text-decoration-line-through': todo.completed}">
+        {{ todo.title | capitalizeFirstLetter }}
       </span>
       <span *ngIf="todo.completed" class="text-success"> completato</span>
     </div>

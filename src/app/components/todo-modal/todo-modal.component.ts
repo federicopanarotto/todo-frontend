@@ -1,53 +1,27 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal, TemplateRef, WritableSignal } from '@angular/core';
-import { TodoService } from './services/todo.service';
-import { BehaviorSubject, combineLatest, debounceTime, Observable, Subject, switchMap, takeUntil, tap } from 'rxjs';
-import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, inject, signal, TemplateRef, WritableSignal } from '@angular/core';
+import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { TodoService } from '../../services/todo.service';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Todo } from './services/todo.type';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+  selector: 'app-todo-modal',
   standalone: false,
-  styleUrl: './app.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  templateUrl: './todo-modal.component.html',
+  styleUrl: './todo-modal.component.css'
 })
-export class AppComponent implements OnInit, OnDestroy {
-  protected fb = inject(FormBuilder);
+export class TodoModalComponent {
   protected todoSrv = inject(TodoService);
-  protected checkSubject = new BehaviorSubject<boolean>(false);
+  protected modalService = inject(NgbModal);
+  protected fb = inject(FormBuilder);
+
   protected refreshSubject = new BehaviorSubject<any>('');
-  protected destroyer$ = new Subject<void>();
 
   todoForm = this.fb.group({
     title: new FormControl<string | null>('', {validators: [Validators.required]}),
     dueDate: new FormControl<Date | null>(null)
   })
 
-  todos$ = combineLatest([
-    this.refreshSubject,
-    this.checkSubject
-  ]).pipe(
-    takeUntil(this.destroyer$),
-    debounceTime(150),
-    switchMap(([_, checkValue]) => {
-      return this.todoSrv.list(checkValue)
-    })
-  )
-
-  setCheckValue(value: boolean) {
-    this.checkSubject.next(value);
-  }
-
-  ngOnInit(): void {
-  }
-
-  ngOnDestroy(): void {
-      this.destroyer$.next();
-      this.destroyer$.complete();
-  }
-
-  protected modalService = inject(NgbModal);
 	closeResult: WritableSignal<string> = signal('');
 
 	openModal(content: TemplateRef<any>) {
@@ -98,10 +72,4 @@ export class AppComponent implements OnInit, OnDestroy {
 				return `with: ${reason}`;
 		}
 	}
-
-  todoCheckComplete(todo: Todo, check: boolean) {
-    this.todoSrv.check(todo.id, check).subscribe(() => {
-      this.refreshSubject.next('');
-    });
-  }
 }

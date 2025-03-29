@@ -10,13 +10,17 @@ import { CheckboxComponent } from './components/checkbox/checkbox.component';
 import { TodoCardComponent } from './components/todo-card/todo-card.component';
 import { ExpiredDatePipe } from './pipes/expired-date.pipe';
 import { DatePipe } from '@angular/common';
+import { CapitalizeFirstLetterPipe } from './pipes/capitalize-first-letter.pipe';
+import { TodoModalComponent } from './components/todo-modal/todo-modal.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CheckboxComponent,
     TodoCardComponent,
-    ExpiredDatePipe
+    ExpiredDatePipe,
+    CapitalizeFirstLetterPipe,
+    TodoModalComponent
   ],
   imports: [
     BrowserModule,

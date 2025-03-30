@@ -2,7 +2,7 @@ import { Component, inject, signal, TemplateRef, WritableSignal } from '@angular
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, map, combineLatest, takeUntil, debounceTime, switchMap, tap, Observable, of } from 'rxjs';
+import { BehaviorSubject, Subject, map, combineLatest, takeUntil, debounceTime, switchMap, tap, Observable, of, filter, concatMap, startWith, catchError } from 'rxjs';
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../services/todo.type';
 
@@ -31,17 +31,23 @@ export class TodoContainerComponent {
       map(todos => todos['data']),
     );
 
+  loading = true;
+
   todos$ = combineLatest([
     this.refreshSubject,
     this.checkSubject,
-    this.todosResolver$
   ]).pipe(
     takeUntil(this.destroyer$),
-    debounceTime(150),
     switchMap(([_, checkValue]) => {
-      return this.todoSrv.list(checkValue)
+      if (this.loading) {
+        this.loading = false;
+        return this.todosResolver$;
+      } else {
+        return this.todoSrv.list(checkValue);
+      }
     })
   );
+
 
   setCheckValue(value: boolean) {
     this.checkSubject.next(value);

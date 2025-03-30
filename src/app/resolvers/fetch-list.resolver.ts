@@ -7,7 +7,7 @@ import { Todo } from '../services/todo.type';
 export const fetchListResolver: ResolveFn<Observable<Todo[]>> = (route, state) => {
   const todoSrv = inject(TodoService);
 
-  return todoSrv.list(true).pipe(
+  return todoSrv.list(false).pipe(
     catchError(() => of([]))
   );
 };

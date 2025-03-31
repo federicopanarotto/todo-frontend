@@ -2,7 +2,7 @@ import { Component, inject, signal, TemplateRef, WritableSignal } from '@angular
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, map, combineLatest, takeUntil, debounceTime, switchMap, tap, Observable, of, filter, concatMap, startWith, catchError } from 'rxjs';
+import { BehaviorSubject, Subject, map, combineLatest, takeUntil, debounceTime, switchMap, tap, Observable, of, filter, concatMap, startWith, catchError, merge, take } from 'rxjs';
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../services/todo.type';
 
@@ -15,10 +15,8 @@ import { Todo } from '../../services/todo.type';
 export class TodoContainerComponent {
   protected fb = inject(FormBuilder);
   protected todoSrv = inject(TodoService);
-  protected checkSubject = new BehaviorSubject<boolean>(false);
-  protected refreshSubject = new BehaviorSubject<any>('');
-  protected destroyer$ = new Subject<void>();
 
+  protected destroyer$ = new Subject<void>();
   protected activatedRoute = inject(ActivatedRoute);
 
   todoForm = this.fb.group({
@@ -26,12 +24,16 @@ export class TodoContainerComponent {
     dueDate: new FormControl<Date | null>(null)
   });
 
+  protected checkSubject = new BehaviorSubject<boolean>(false);
+  protected checkCompleteSubject = new Subject<{todo: Todo, check: boolean}>();
+  protected refreshSubject = new BehaviorSubject<any>('');
+
+  loading = true;
+
   todosResolver$: Observable<Todo[]> = this.activatedRoute.data
     .pipe(
       map(todos => todos['data']),
     );
-
-  loading = true;
 
   todos$ = combineLatest([
     this.refreshSubject,
@@ -48,9 +50,21 @@ export class TodoContainerComponent {
     })
   );
 
+  clickComplete$ = this.checkCompleteSubject
+    .pipe(
+      debounceTime(300),
+      takeUntil(this.destroyer$),
+      filter((data) => data && !!data.todo),
+      switchMap((data) => this.todoSrv.check(data.todo.id, data.check))
+    )
+    .subscribe(() => this.refreshSubject.next(''));
 
   setCheckValue(value: boolean) {
     this.checkSubject.next(value);
+  }
+
+  todoCheckComplete(todo: Todo, check: boolean) {
+    this.checkCompleteSubject.next({todo, check});
   }
 
   ngOnInit(): void {
@@ -114,9 +128,4 @@ export class TodoContainerComponent {
 		}
 	}
 
-  todoCheckComplete(todo: Todo, check: boolean) {
-    this.todoSrv.check(todo.id, check).subscribe(() => {
-      this.refreshSubject.next('');
-    });
-  }
 }

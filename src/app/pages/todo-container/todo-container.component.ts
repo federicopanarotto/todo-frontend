@@ -106,7 +106,8 @@ export class TodoContainerComponent {
           this.todoForm.markAsPristine();
           modal.close('Save click');
         });
-
+    } else {
+      this.todoForm.markAllAsTouched();
     }
   }
 

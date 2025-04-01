@@ -54,12 +54,15 @@
 						name="title"
             type="text"
             formControlName="title"
-            [class.is-invalid]="todoForm.get('title')?.dirty && todoForm.get('title')?.invalid"
+            [class.is-invalid]="(todoForm.get('title')?.dirty || todoForm.get('title')?.touched) && todoForm.get('title')?.invalid"
 					/>
 				</div>
+        <div *ngIf="todoForm.get('title')?.invalid && (todoForm.get('title')?.dirty || todoForm.get('title')?.touched)" class="text-danger">
+          Il titolo è obbligatorio.
+        </div>
 			</div>
       <div class="mb-3">
-				<label for="dateOfBirth">Scadenza</label>
+				<label for="dateOfBirth">Scadenza (opzionale)</label>
 				<div class="input-group">
 					<input
 						id="dueDate"
@@ -73,6 +76,9 @@
 					/>
 					<button class="btn btn-outline-secondary bi bi-calendar3" (click)="dp.toggle()" type="button"></button>
 				</div>
+        <div *ngIf="todoForm.get('dueDate')?.invalid" class="text-danger">
+          Formato data non corretto
+        </div>
 			</div>
 		</form>
     

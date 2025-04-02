@@ -1,8 +1,6 @@
-import { Component, inject, OnInit, TemplateRef } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, map, combineLatest, switchMap, Observable, merge, skip } from 'rxjs';
+import { BehaviorSubject, combineLatest, switchMap} from 'rxjs';
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../services/todo.type';
 import { TodoModalComponent } from '../../components/todo-modal/todo-modal.component';

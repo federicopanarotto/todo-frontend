@@ -1,4 +1,4 @@
-import { Component, inject, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TodoService } from '../../services/todo.service';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -7,7 +7,8 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
   selector: 'app-todo-modal',
   standalone: false ,
   templateUrl: './todo-modal.component.html',
-  styleUrl: './todo-modal.component.css'
+  styleUrl: './todo-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoModalComponent {
   protected todoSrv = inject(TodoService);

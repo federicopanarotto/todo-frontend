@@ -62,7 +62,7 @@ export class TodoContainerComponent {
           this.refreshSubject.next('');
           this.todoForm.reset();
           this.todoForm.markAsPristine();
-          modal.close('Save click');
+          modal.close();
         });
     } else {
       this.todoForm.markAllAsTouched();
@@ -72,7 +72,7 @@ export class TodoContainerComponent {
   dismissModal(modal: any) {
     this.todoForm.reset();
     this.todoForm.markAsPristine();
-    modal.dismiss('Cross click')
+    modal.dismiss()
   }
 
 }

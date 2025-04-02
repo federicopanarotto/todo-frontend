@@ -9,6 +9,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 })
 export class CheckboxComponent {
   @Input({ required: true})
+  checkboxName!: string;
+
+  @Input({ required: true})
   text!: string;
 
   @Input({ required: true })
@@ -16,6 +19,7 @@ export class CheckboxComponent {
 
   @Output('checkboxChange')
   onCheckboxChange = new EventEmitter<boolean>();
+
 
   checkboxChange(val: boolean) {
     this.onCheckboxChange.emit(val);

@@ -1,11 +1,12 @@
 <div class="form-check">
   <input 
+    [id]="checkboxName"
     class="form-check-input border-1 custom-border" 
     type="checkbox" 
     [ngModel]="value"
     (ngModelChange)="checkboxChange($event)"
   >
-  <label class="form-check-label" for="flexCheckDefault">
+  <label class="form-check-label" [for]="checkboxName">
     {{ text }}
   </label>
 </div>

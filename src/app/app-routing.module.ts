@@ -7,10 +7,6 @@ const routes: Routes = [
   {
     path: '',
     component: TodoContainerComponent,
-    resolve: {
-      data: fetchListResolver
-    },
-    runGuardsAndResolvers: 'paramsOrQueryParamsChange'
   }
 ];
 

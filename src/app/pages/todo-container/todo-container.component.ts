@@ -16,26 +16,14 @@ export class TodoContainerComponent {
   protected todoSrv = inject(TodoService);
   protected checkSubject = new BehaviorSubject<boolean>(false);
   protected refreshSubject = new BehaviorSubject<any>('');
-  protected activatedRoute = inject(ActivatedRoute);
 
-  todosResolver$ = this.activatedRoute.data
-    .pipe(
-      map(todos => todos['data']),
-    );
-
-  protected internalTodo$ = combineLatest([
+  todos$ = combineLatest([
     this.refreshSubject,
     this.checkSubject,
   ]).pipe(
-    skip(1),
     switchMap(([_, checkValue]) => {
       return this.todoSrv.list(checkValue);
     }),
-  );
-
-  todos$ = merge(
-    this.internalTodo$,
-    this.todosResolver$
   );
 
   setCheckValue(value: boolean) {

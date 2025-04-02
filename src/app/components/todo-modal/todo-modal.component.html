@@ -1,0 +1,49 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Nuovo to do</h4>
+  <button type="button" class="btn-close" (click)="dismissModal(modal)"></button>
+</div>
+<div class="modal-body">
+
+  <form [formGroup]="todoForm">
+    <div class="mb-3">
+      <label for="dateOfBirth">Titolo</label>
+      <div class="input-group">
+        <input
+          id="title"
+          class="form-control"
+          placeholder="es. compito x"
+          name="title"
+          type="text"
+          formControlName="title"
+          [class.is-invalid]="(todoForm.get('title')?.dirty || todoForm.get('title')?.touched) && todoForm.get('title')?.invalid"
+        />
+      </div>
+      <div *ngIf="todoForm.get('title')?.invalid && (todoForm.get('title')?.dirty || todoForm.get('title')?.touched)" class="text-danger">
+        Il titolo è obbligatorio.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="dateOfBirth">Scadenza (opzionale)</label>
+      <div class="input-group">
+        <input
+          id="dueDate"
+          class="form-control"
+          placeholder="yyyy-mm-dd"
+          name="dp"
+          ngbDatepicker
+          #dp="ngbDatepicker"
+          formControlName="dueDate"
+          [class.is-invalid]="todoForm.get('dueDate')?.invalid"
+        />
+        <button class="btn btn-outline-secondary bi bi-calendar3" (click)="dp.toggle()" type="button"></button>
+      </div>
+      <div *ngIf="todoForm.get('dueDate')?.invalid" class="text-danger">
+        Formato data non corretto
+      </div>
+    </div>
+  </form>
+  
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="closeModal(modal)">Crea</button>
+</div>

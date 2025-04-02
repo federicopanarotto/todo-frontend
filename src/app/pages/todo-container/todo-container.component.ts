@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject, map, combineLatest, switchMap, Observable, merge, skip } from 'rxjs';
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../services/todo.type';
+import { TodoModalComponent } from '../../components/todo-modal/todo-modal.component';
 
 @Component({
   selector: 'app-todo-container',
@@ -35,44 +36,16 @@ export class TodoContainerComponent {
       .subscribe(() => this.refreshSubject.next(''));
   }
 
-  // Modal and form
-  protected fb = inject(FormBuilder);
   protected modalService = inject(NgbModal);
 
-  todoForm = this.fb.group({
-    title: new FormControl<string | null>('', {validators: [Validators.required]}),
-    dueDate: new FormControl<Date | null>(null)
-  });
-
-	openModal(content: TemplateRef<any>) {
-		this.modalService.open(content);
+	openModal() {
+		this.modalService.open(TodoModalComponent).result
+      .then((formValues) => {
+        console.log(formValues);
+        this.todoSrv.add(formValues.title, formValues.dueDate)
+         .subscribe(() => {
+           this.refreshSubject.next('');
+         });
+      });
 	}
-
-  closeModal(modal: any) {
-    if (this.todoForm.valid) {
-      const title = this.todoForm.value.title!;
-      let dueDate = undefined;
-
-      if (this.todoForm.value.dueDate) {
-        dueDate = this.todoForm.value.dueDate!.toISOString().split('T')[0];
-      }
-
-      this.todoSrv.add(title, dueDate)
-        .subscribe(() => {
-          this.refreshSubject.next('');
-          this.todoForm.reset();
-          this.todoForm.markAsPristine();
-          modal.close();
-        });
-    } else {
-      this.todoForm.markAllAsTouched();
-    }
-  }
-
-  dismissModal(modal: any) {
-    this.todoForm.reset();
-    this.todoForm.markAsPristine();
-    modal.dismiss()
-  }
-
 }

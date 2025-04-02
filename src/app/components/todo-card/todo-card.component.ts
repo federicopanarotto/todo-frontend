@@ -19,6 +19,4 @@ export class TodoCardComponent {
   completeChange(complete: boolean) {
     this.onCompleteChange.emit(complete);
   }
-
-  
 }

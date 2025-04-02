@@ -1,8 +1,8 @@
-import { Component, inject, signal, TemplateRef, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, map, combineLatest, takeUntil, debounceTime, switchMap, tap, Observable, of, filter, concatMap, startWith, catchError, merge, take } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { BehaviorSubject, Subject, map, combineLatest, switchMap, Observable, merge, skip } from 'rxjs';
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../services/todo.type';
 
@@ -13,81 +13,51 @@ import { Todo } from '../../services/todo.type';
   styleUrl: './todo-container.component.css'
 })
 export class TodoContainerComponent {
-  protected fb = inject(FormBuilder);
   protected todoSrv = inject(TodoService);
-
-  protected destroyer$ = new Subject<void>();
+  protected checkSubject = new BehaviorSubject<boolean>(false);
+  protected refreshSubject = new BehaviorSubject<any>('');
   protected activatedRoute = inject(ActivatedRoute);
 
-  todoForm = this.fb.group({
-    title: new FormControl<string | null>('', {validators: [Validators.required]}),
-    dueDate: new FormControl<Date | null>(null)
-  });
-
-  protected checkSubject = new BehaviorSubject<boolean>(false);
-  protected checkCompleteSubject = new Subject<{todo: Todo, check: boolean}>();
-  protected refreshSubject = new BehaviorSubject<any>('');
-
-  loading = true;
-
-  todosResolver$: Observable<Todo[]> = this.activatedRoute.data
+  todosResolver$ = this.activatedRoute.data
     .pipe(
       map(todos => todos['data']),
     );
 
-  todos$ = combineLatest([
+  protected internalTodo$ = combineLatest([
     this.refreshSubject,
     this.checkSubject,
   ]).pipe(
-    takeUntil(this.destroyer$),
+    skip(1),
     switchMap(([_, checkValue]) => {
-      if (this.loading) {
-        this.loading = false;
-        return this.todosResolver$;
-      } else {
-        return this.todoSrv.list(checkValue);
-      }
-    })
+      return this.todoSrv.list(checkValue);
+    }),
   );
 
-  clickComplete$ = this.checkCompleteSubject
-    .pipe(
-      debounceTime(300),
-      takeUntil(this.destroyer$),
-      filter((data) => data && !!data.todo),
-      switchMap((data) => this.todoSrv.check(data.todo.id, data.check))
-    )
-    .subscribe(() => this.refreshSubject.next(''));
+  todos$ = merge(
+    this.internalTodo$,
+    this.todosResolver$
+  );
 
   setCheckValue(value: boolean) {
     this.checkSubject.next(value);
   }
 
   todoCheckComplete(todo: Todo, check: boolean) {
-    this.checkCompleteSubject.next({todo, check});
+    this.todoSrv.check(todo.id, check)
+      .subscribe(() => this.refreshSubject.next(''));
   }
 
-  ngOnInit(): void {
-    
-  }
-
-  ngOnDestroy(): void {
-      this.destroyer$.next();
-      this.destroyer$.complete();
-  }
-
+  // Modal and form
+  protected fb = inject(FormBuilder);
   protected modalService = inject(NgbModal);
-	closeResult: WritableSignal<string> = signal('');
+
+  todoForm = this.fb.group({
+    title: new FormControl<string | null>('', {validators: [Validators.required]}),
+    dueDate: new FormControl<Date | null>(null)
+  });
 
 	openModal(content: TemplateRef<any>) {
-		this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then(
-			(result) => {
-				this.closeResult.set(`Closed with: ${result}`);
-			},
-			(reason) => {
-				this.closeResult.set(`Dismissed ${this.getDismissReason(reason)}`);
-			},
-		);
+		this.modalService.open(content);
 	}
 
   closeModal(modal: any) {
@@ -114,19 +84,7 @@ export class TodoContainerComponent {
   dismissModal(modal: any) {
     this.todoForm.reset();
     this.todoForm.markAsPristine();
-
     modal.dismiss('Cross click')
   }
-
-	private getDismissReason(reason: any): string {
-		switch (reason) {
-			case ModalDismissReasons.ESC:
-				return 'by pressing ESC';
-			case ModalDismissReasons.BACKDROP_CLICK:
-				return 'by clicking on a backdrop';
-			default:
-				return `with: ${reason}`;
-		}
-	}
 
 }

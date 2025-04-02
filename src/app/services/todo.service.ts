@@ -18,9 +18,9 @@ export class TodoService {
   }
 
   check(id: string, check: boolean) {
-    return check ? 
-      this.http.patch(`/api/todos/${id}/check`, {}) :
-      this.http.patch(`/api/todos/${id}/uncheck`, {});
+    return check 
+      ? this.http.patch(`/api/todos/${id}/check`, {}) 
+      : this.http.patch(`/api/todos/${id}/uncheck`, {});
   }
 
 }

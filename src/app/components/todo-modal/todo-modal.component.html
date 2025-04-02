@@ -3,8 +3,9 @@
   <button type="button" class="btn-close" (click)="dismissModal(modal)"></button>
 </div>
 <div class="modal-body">
-
+  
   <form [formGroup]="todoForm">
+    <!-- Input titolo -->
     <div class="mb-3">
       <label for="dateOfBirth">Titolo</label>
       <div class="input-group">
@@ -22,6 +23,7 @@
         Il titolo è obbligatorio.
       </div>
     </div>
+    <!-- Input date -->
     <div class="mb-3">
       <label for="dateOfBirth">Scadenza (opzionale)</label>
       <div class="input-group">

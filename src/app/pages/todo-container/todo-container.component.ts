@@ -17,13 +17,13 @@ export class TodoContainerComponent {
   protected refreshSubject = new BehaviorSubject<any>('');
 
   todos$ = combineLatest([
-    this.refreshSubject,
-    this.checkSubject,
-  ]).pipe(
-    switchMap(([_, checkValue]) => {
-      return this.todoSrv.list(checkValue);
-    }),
-  );
+      this.refreshSubject,
+      this.checkSubject,
+    ]).pipe(
+      switchMap(([_, checkValue]) => {
+        return this.todoSrv.list(checkValue);
+      })
+    );
 
   setCheckValue(value: boolean) {
     this.checkSubject.next(value);
@@ -45,5 +45,5 @@ export class TodoContainerComponent {
            this.refreshSubject.next('');
          });
       });
-	}
+  }
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Todo } from './todo.type';
@@ -10,7 +10,7 @@ export class TodoService {
   protected http = inject(HttpClient);
 
   list(showCompleted: boolean = false) {
-    return this.http.get<Todo[]>(`/api/todos?showCompleted=${showCompleted}`);
+    return this.http.get<Todo[]>(`/api/todos`, { params: {showCompleted}});
   }
 
   add(title: string, dueDate: string | undefined) {

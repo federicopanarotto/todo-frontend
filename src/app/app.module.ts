@@ -12,6 +12,7 @@ import { ExpiredDatePipe } from './pipes/expired-date.pipe';
 import { DatePipe } from '@angular/common';
 import { CapitalizeFirstLetterPipe } from './pipes/capitalize-first-letter.pipe';
 import { TodoContainerComponent } from './pages/todo-container/todo-container.component';
+import { TodoModalComponent } from './components/todo-modal/todo-modal.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { TodoContainerComponent } from './pages/todo-container/todo-container.co
     TodoCardComponent,
     ExpiredDatePipe,
     CapitalizeFirstLetterPipe,
-    TodoContainerComponent
+    TodoContainerComponent,
+    TodoModalComponent
   ],
   imports: [
     BrowserModule,

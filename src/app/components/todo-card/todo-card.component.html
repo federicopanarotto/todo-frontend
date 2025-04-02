@@ -21,6 +21,7 @@
     </div>
     <div>
       <app-checkbox
+        [checkboxName]="todo.id"
         [text]="'completato'"
         [value]="completed"
         (checkboxChange)="completeChange($event)"

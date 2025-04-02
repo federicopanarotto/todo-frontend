@@ -1,10 +1,9 @@
-import { Component, inject, OnInit, TemplateRef } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject, map, combineLatest, switchMap, Observable, merge, skip } from 'rxjs';
+import { BehaviorSubject, combineLatest, switchMap} from 'rxjs';
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../services/todo.type';
+import { TodoModalComponent } from '../../components/todo-modal/todo-modal.component';
 
 @Component({
   selector: 'app-todo-container',
@@ -16,26 +15,14 @@ export class TodoContainerComponent {
   protected todoSrv = inject(TodoService);
   protected checkSubject = new BehaviorSubject<boolean>(false);
   protected refreshSubject = new BehaviorSubject<any>('');
-  protected activatedRoute = inject(ActivatedRoute);
 
-  todosResolver$ = this.activatedRoute.data
-    .pipe(
-      map(todos => todos['data']),
-    );
-
-  protected internalTodo$ = combineLatest([
+  todos$ = combineLatest([
     this.refreshSubject,
     this.checkSubject,
   ]).pipe(
-    skip(1),
     switchMap(([_, checkValue]) => {
       return this.todoSrv.list(checkValue);
     }),
-  );
-
-  todos$ = merge(
-    this.internalTodo$,
-    this.todosResolver$
   );
 
   setCheckValue(value: boolean) {
@@ -47,44 +34,16 @@ export class TodoContainerComponent {
       .subscribe(() => this.refreshSubject.next(''));
   }
 
-  // Modal and form
-  protected fb = inject(FormBuilder);
   protected modalService = inject(NgbModal);
 
-  todoForm = this.fb.group({
-    title: new FormControl<string | null>('', {validators: [Validators.required]}),
-    dueDate: new FormControl<Date | null>(null)
-  });
-
-	openModal(content: TemplateRef<any>) {
-		this.modalService.open(content);
+	openModal() {
+		this.modalService.open(TodoModalComponent).result
+      .then((formValues) => {
+        console.log(formValues);
+        this.todoSrv.add(formValues.title, formValues.dueDate)
+         .subscribe(() => {
+           this.refreshSubject.next('');
+         });
+      });
 	}
-
-  closeModal(modal: any) {
-    if (this.todoForm.valid) {
-      const title = this.todoForm.value.title!;
-      let dueDate = undefined;
-
-      if (this.todoForm.value.dueDate) {
-        dueDate = this.todoForm.value.dueDate!.toISOString().split('T')[0];
-      }
-
-      this.todoSrv.add(title, dueDate)
-        .subscribe(() => {
-          this.refreshSubject.next('');
-          this.todoForm.reset();
-          this.todoForm.markAsPristine();
-          modal.close('Save click');
-        });
-    } else {
-      this.todoForm.markAllAsTouched();
-    }
-  }
-
-  dismissModal(modal: any) {
-    this.todoForm.reset();
-    this.todoForm.markAsPristine();
-    modal.dismiss('Cross click')
-  }
-
 }

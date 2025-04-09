@@ -22,9 +22,9 @@ export class TodoModalComponent {
     dueDate: new FormControl<Date | null>(null)
   });
 
-  closeModal(modal: any) {
+  closeModal() {
     if (this.todoForm.valid) {
-      modal.close(this.todoForm.value);
+      this.modal.close(this.todoForm.value);
       this.todoForm.reset();
       this.todoForm.markAsPristine();
     } else {
@@ -32,9 +32,9 @@ export class TodoModalComponent {
     }
   }
 
-  dismissModal(modal: any) {
+  dismissModal() {
     this.todoForm.reset();
     this.todoForm.markAsPristine();
-    modal.dismiss()
+    this.modal.dismiss()
   }
 }

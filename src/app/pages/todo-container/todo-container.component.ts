@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, combineLatest, switchMap} from 'rxjs';
+import { BehaviorSubject, combineLatest, startWith, Subject, switchMap} from 'rxjs';
 import { TodoService } from '../../services/todo.service';
 import { Todo } from '../../services/todo.type';
 import { TodoModalComponent } from '../../components/todo-modal/todo-modal.component';
@@ -14,10 +14,10 @@ import { TodoModalComponent } from '../../components/todo-modal/todo-modal.compo
 export class TodoContainerComponent {
   protected todoSrv = inject(TodoService);
   protected checkSubject = new BehaviorSubject<boolean>(false);
-  protected refreshSubject = new BehaviorSubject<any>('');
+  protected refreshSubject = new Subject<void>();
 
   todos$ = combineLatest([
-      this.refreshSubject,
+      this.refreshSubject.pipe(startWith({})),
       this.checkSubject,
     ]).pipe(
       switchMap(([_, checkValue]) => {
@@ -31,7 +31,7 @@ export class TodoContainerComponent {
 
   todoCheckComplete(todo: Todo, check: boolean) {
     this.todoSrv.check(todo.id, check)
-      .subscribe(() => this.refreshSubject.next(''));
+      .subscribe(() => this.refreshSubject.next());
   }
 
   protected modalService = inject(NgbModal);
@@ -42,7 +42,7 @@ export class TodoContainerComponent {
         console.log(formValues);
         this.todoSrv.add(formValues.title, formValues.dueDate)
          .subscribe(() => {
-           this.refreshSubject.next('');
+           this.refreshSubject.next();
          });
       });
   }
